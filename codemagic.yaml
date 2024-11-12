@@ -3,22 +3,25 @@ workflows:
     name: Unity Build Workflow
     environment:
       vars:
-        UNITY_VERSION: "2021.3.8f1"  # Specify the Unity version directly
+        UNITY_VERSION: "2021.1.17f1"  # Change to a reliable version
 
     triggering:
       events:
         - push
 
     scripts:
-      - name: Install Unity via Unity Hub CLI
+      - name: Direct Download and Install Unity
         script: |
-          echo "Starting Unity installation using Unity Hub CLI"
-          # Make sure Unity Hub is available and update if necessary
-          brew install --cask unity-hub || true
-          # Start Unity Hub and install the specified Unity version
-          unity-hub install --version $UNITY_VERSION --default || { echo "Unity installation failed"; exit 1; }
+          echo "Attempting direct download and installation of Unity"
+          UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/2021.1.17f1/Unity.pkg"  # Known version URL
+          echo "Downloading Unity from $UNITY_DOWNLOAD_URL"
+          curl -o /tmp/Unity.pkg "$UNITY_DOWNLOAD_URL"
+          echo "Download complete, verifying /tmp directory contents"
+          ls -l /tmp
+          echo "Starting installation"
+          sudo installer -pkg /tmp/Unity.pkg -target / || { echo "Installation failed"; exit 1; }
           echo "Unity installed successfully"
 
       - name: Build Project
         script: |
-          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild
+          /Applications/Unity/Hub/Editor/2021.1.17f1/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild

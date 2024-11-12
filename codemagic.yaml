@@ -3,7 +3,7 @@ workflows:
     name: Unity Build Workflow
     environment:
       vars:
-        UNITY_VERSION: "2021.3.8f1"  # Specify the Unity version directly
+        UNITY_VERSION: "2021.3.8f1"  # Adjust if necessary
 
     triggering:
       events:
@@ -13,13 +13,13 @@ workflows:
       - name: Download and Install Unity
         script: |
           echo "Starting Unity installation"
-          UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/2021.3.8f1/Unity.pkg"  # Use a fixed version URL
+          UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/2021.3.8f1/Unity.pkg"  # Specify fixed version
           echo "Downloading Unity from $UNITY_DOWNLOAD_URL"
-          curl -o ~/Downloads/Unity.pkg "$UNITY_DOWNLOAD_URL"
-          echo "Contents of Downloads directory:"
-          ls -l ~/Downloads
+          curl -o /Applications/Unity.pkg "$UNITY_DOWNLOAD_URL"
+          echo "Contents of /Applications directory:"
+          ls -l /Applications
           echo "Download successful, starting installation"
-          sudo installer -pkg ~/Downloads/Unity.pkg -target / || { echo "Installation failed"; exit 1; }
+          installer -pkg /Applications/Unity.pkg -target / || { echo "Installation failed"; exit 1; }
           echo "Unity installed successfully"
 
       - name: Build Project

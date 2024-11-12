@@ -15,12 +15,12 @@ workflows:
           echo "Checking for pre-installed Unity versions"
           ls /Applications/Unity/Hub/Editor || echo "No Unity installations found in default path"
           # Try to locate Unity in standard paths
-          UNITY_PATH=$(find /Applications/Unity/Hub/Editor -type d -name "2021.1.17f1" || echo "Unity not found")
-          if [ "$UNITY_PATH" != "Unity not found" ]; then
-            echo "Using pre-installed Unity at $UNITY_PATH"
-          else
-            echo "No pre-installed Unity version found; installation required but has been unsuccessful."
+          UNITY_PATH=$(find /Applications/Unity/Hub/Editor -type d -name "$UNITY_VERSION" 2>/dev/null || echo "Unity not found")
+          if [ "$UNITY_PATH" == "Unity not found" ]; then
+            echo "No pre-installed Unity version found; please ensure Unity is installed on Codemagic."
             exit 1
+          else
+            echo "Using pre-installed Unity at $UNITY_PATH"
           fi
 
       - name: Build Project

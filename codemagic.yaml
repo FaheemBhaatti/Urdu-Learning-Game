@@ -3,25 +3,26 @@ workflows:
     name: Unity Build Workflow
     environment:
       vars:
-        UNITY_VERSION: "2021.1.17f1"  # Change to a reliable version
+        UNITY_VERSION: "2021.1.17f1"  # Specify a known Unity version
 
     triggering:
       events:
         - push
 
     scripts:
-      - name: Direct Download and Install Unity
+      - name: Check for Pre-installed Unity
         script: |
-          echo "Attempting direct download and installation of Unity"
-          UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/2021.1.17f1/Unity.pkg"  # Known version URL
-          echo "Downloading Unity from $UNITY_DOWNLOAD_URL"
-          curl -o /tmp/Unity.pkg "$UNITY_DOWNLOAD_URL"
-          echo "Download complete, verifying /tmp directory contents"
-          ls -l /tmp
-          echo "Starting installation"
-          sudo installer -pkg /tmp/Unity.pkg -target / || { echo "Installation failed"; exit 1; }
-          echo "Unity installed successfully"
+          echo "Checking for pre-installed Unity versions"
+          ls /Applications/Unity/Hub/Editor || echo "No Unity installations found in default path"
+          # Try to locate Unity in standard paths
+          UNITY_PATH=$(find /Applications/Unity/Hub/Editor -type d -name "2021.1.17f1" || echo "Unity not found")
+          if [ "$UNITY_PATH" != "Unity not found" ]; then
+            echo "Using pre-installed Unity at $UNITY_PATH"
+          else
+            echo "No pre-installed Unity version found; installation required but has been unsuccessful."
+            exit 1
+          fi
 
       - name: Build Project
         script: |
-          /Applications/Unity/Hub/Editor/2021.1.17f1/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild
+          "$UNITY_PATH/Unity.app/Contents/MacOS/Unity" -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild

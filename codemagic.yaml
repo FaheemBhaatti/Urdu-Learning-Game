@@ -3,18 +3,23 @@ workflows:
     name: Unity Build Workflow
     environment:
       vars:
-        UNITY_VERSION: "2021.3.8f1"  # Adjust this based on your required Unity version
+        UNITY_VERSION: "2021.3.8f1"  # Adjust this to the Unity version you want
 
     triggering:
       events:
         - push
 
     scripts:
-      - name: Download and Install Unity
+      - name: Debug Unity Installation
         script: |
+          echo "Starting Unity installation"
           UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/`$UNITY_VERSION`/Unity.pkg"
-          curl -o Unity.pkg "$UNITY_DOWNLOAD_URL"
-          sudo installer -pkg Unity.pkg -target /
+          echo "Downloading Unity from $UNITY_DOWNLOAD_URL"
+          curl -o Unity.pkg "$UNITY_DOWNLOAD_URL" || { echo "Download failed"; exit 1; }
+          echo "Download successful, starting installation"
+          sudo installer -pkg Unity.pkg -target / || { echo "Installation failed"; exit 1; }
+          echo "Unity installed successfully"
+
       - name: Build Project
         script: |
-          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -ba
+          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild

@@ -12,10 +12,11 @@ workflows:
     scripts:
       - name: Install Unity
         script: |
-          curl -o unity.tar.xz "https://download.unity3d.com/download_unity/unityhub/UnityHub.AppImage"
-          tar -xf unity.tar.xz
-          chmod +x UnityHub.AppImage
-          ./UnityHub.AppImage install --version $UNITY_VERSION
+          curl -o unity.tar.xz "https://download.unity3d.com/download_unity/`$UNITY_VERSION`/UnitySetup.tar.xz"
+          mkdir unity-install
+          tar -xf unity.tar.xz -C unity-install
+          chmod +x unity-install/UnitySetup
+          sudo unity-install/UnitySetup --unattended --install-location=/opt/Unity --download-location=unity-install --components=Unity
       - name: Build Project
         script: |
-          ./UnityHub.AppImage -buildPath /workspace/Urdu-Learning-Game/Builds -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -executeMethod BuildScript.PerformBuild
+          /opt/Unity/Editor/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild

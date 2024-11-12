@@ -3,18 +3,18 @@ workflows:
     name: Unity Build Workflow
     environment:
       vars:
-        UNITY_VERSION: "2021.3.8f1"  # Adjust to your specific Unity version
+        UNITY_VERSION: "2021.3.8f1"  # Adjust this based on your required Unity version
 
     triggering:
       events:
         - push
 
     scripts:
-      - name: Install Unity
+      - name: Download and Install Unity
         script: |
-          # Install Unity using Unity Hub CLI for macOS
-          brew install --cask unity-hub || true
-          unity-hub install $UNITY_VERSION --default
+          UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/`$UNITY_VERSION`/Unity.pkg"
+          curl -o Unity.pkg "$UNITY_DOWNLOAD_URL"
+          sudo installer -pkg Unity.pkg -target /
       - name: Build Project
         script: |
-          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -buildTarget Win64 -executeMethod BuildScript.PerformBuild
+          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity -projectPath /workspace/Urdu-Learning-Game -quit -ba

@@ -1,0 +1,21 @@
+workflows:
+  unity_build:
+    name: Unity Build Workflow
+    environment:
+      vars:
+        UNITY_VERSION: "2021.3.8f1"  # Adjust the version based on your needs
+
+    triggering:
+      events:
+        - push
+
+    scripts:
+      - name: Install Unity
+        script: |
+          curl -o unity.tar.xz "https://download.unity3d.com/download_unity/unityhub/UnityHub.AppImage"
+          tar -xf unity.tar.xz
+          chmod +x UnityHub.AppImage
+          ./UnityHub.AppImage install --version $UNITY_VERSION
+      - name: Build Project
+        script: |
+          ./UnityHub.AppImage -buildPath /workspace/Urdu-Learning-Game/Builds -projectPath /workspace/Urdu-Learning-Game -quit -batchmode -nographics -executeMethod BuildScript.PerformBuild
